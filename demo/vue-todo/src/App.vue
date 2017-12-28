@@ -2,19 +2,19 @@
 <div class="container col-md-6 col-lg-4">
   <div class="jumbotron">
     <h1>vue-todo</h1>
-    <a href="https://github.com/zhanghaicong">©zhanghaicong</a>
+    <a target="_blank" href="https://github.com/zhanghaicong/vue/tree/master/demo/vue-todo">©zhanghaicong</a>
   </div>
   <form class="form-inline">
     <input type="text" class="form-control col-8 col-md-10" placeholder="Enter todo task" v-model.trim="task" maxlength="60">
-    <button type="button" class="btn btn-primary col-4 col-md-2 cursor-pointer" @click="add">add</button>
+    <button type="button" class="btn btn-primary col-4 col-md-2 cursor-pointer" @click="addToTodo">add</button>
   </form>
   <div id="to-do-list">
     <h5>
       <span>todo</span>
       <span class="badge badge-secondary">{{todoList.length}}</span>
     </h5>
-    <ul class="list-group" v-show="todoList.length>0">
-      <li class="list-group-item overflow-ellipsis form-inline" v-for="(todo,index) in todoList">
+    <ul class="list-group" v-show="this.$store.state.todoList.length>0">
+      <li class="list-group-item overflow-ellipsis form-inline" v-for="(todo,index) in this.$store.state.todoList">
         <span class="cursor-pointer" @click="done(index)">{{todo}}</span>
         <span class="badge badge-secondary float-right cursor-pointer" @click="removeFromTodo(index)">X</span>
       </li>
@@ -40,15 +40,14 @@ export default {
   data() {
     return {
       task: '',
-      todoList: [],
-      doneList: []
+      todoList: this.$store.state.todoList,
+      doneList: this.$store.state.doneList
     }
   },
   methods: {
-    add() {
+    addToTodo() {
       if (this.task != '') {
-        this.todoList.push(this.task);
-        this.task = '';
+        this.$store.dispatch('addToTodo', this.task)
       }
     },
     todo(index) {
@@ -60,7 +59,10 @@ export default {
       this.todoList.splice(index, 1);
     },
     removeFromTodo(index) {
-      this.todoList.splice(index, 1);
+      this.$store.dispatch({
+        type: 'removeFromTodo',
+        index: index
+      });
     },
     removeFromDone(index) {
       this.doneList.splice(index, 1);
