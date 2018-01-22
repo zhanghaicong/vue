@@ -7,8 +7,8 @@ Vue.use(Vuex)
 
 // initial state
 const state = {
-  todoList: JSON.parse(localStorage['todo']) instanceof Array ? JSON.parse(localStorage['todo']) : [],
-  doneList: JSON.parse(localStorage['done']) instanceof Array ? JSON.parse(localStorage['done']) : []
+  todoList: localStorage['todo'] && JSON.parse(localStorage['todo']) instanceof Array ? JSON.parse(localStorage['todo']) : [],
+  doneList: localStorage['done'] && JSON.parse(localStorage['done']) instanceof Array ? JSON.parse(localStorage['done']) : []
 }
 
 // getters
