@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
 import * as types from './mutation-types'
 
 Vue.use(Vuex)
@@ -8,22 +7,27 @@ Vue.use(Vuex)
 // initial state
 const state = {
   headerData: {
-    title: 'comment-box',
+    title: 'vue-comment-box',
     links: [{
       title: 'demo',
       href: 'https://zhanghaicong.github.io/'
     }, {
       title: 'project',
-      href: 'https://github.com/zhanghaicong/vue/tree/master/demo/comment-box'
+      href: 'https://github.com/zhanghaicong/vue/tree/master/demo/vue-comment-box'
     }]
   },
-  user: localStorage['user']==''?'小硫酸铜':localStorage['user'],
-  commentList: []
+  user: (localStorage['user'] == '' || localStorage['user'] == undefined) ? '小硫酸铜' : localStorage['user'],
+  commentList: (localStorage['commentList'] && JSON.parse(localStorage['commentList']) instanceof Array) ? JSON.parse(localStorage['commentList']) : []
 }
 
 // getters
 const getters = {
-  //commentList: state => state.commentList
+  commentListIsLike: state => {
+    state.commentList.map(x => {
+      x.isLike = new Set(x.like).has(state.user);
+    });
+    return state.commentList;
+  }
 }
 
 // actions
@@ -33,15 +37,15 @@ const actions = {
   }, user) {
     commit(types.CHANGE_USER, user);
   },
-  getCommentList({
-    commit
-  }) {
-    commit(types.GET_COMMENT_LIST);
-  },
   comment({
     commit
   }, content) {
     commit(types.COMMENT, content);
+  },
+  likeOrNot({
+    commit
+  }, id) {
+    commit(types.LIKEORNOT, id);
   },
   deleteComment({
     commit
@@ -54,13 +58,7 @@ const actions = {
 const mutations = {
   [types.CHANGE_USER](state, user) {
     state.user = user == '' ? '小硫酸铜' : user;
-    console.log(state.user);
     localStorage['user'] = state.user;
-  },
-  [types.GET_COMMENT_LIST](state) {
-    if (localStorage['commentList'] && JSON.parse(localStorage['commentList']) instanceof Array) {
-      state.commentList = JSON.parse(localStorage['commentList']);
-    }
   },
   [types.COMMENT](state, content) {
     const id = state.commentList.length > 0 ? parseInt(state.commentList[state.commentList.length - 1].id) + 1 : 1;
@@ -70,21 +68,34 @@ const mutations = {
       content: content,
       time: parseInt(new Date().getTime() / 1000),
       like: [],
-      hate: [],
     };
+    console.log(comment);
     state.commentList.push(comment);
-    localStorage['commentList'] = JSON.stringify(state.commentList);
-    console.log(JSON.stringify(state.commentList));
+    saveCommentList(state.commentList);
   },
   [types.DELETECOMMENT](state, id) {
-    for (let i = 0; i < state.commentList.length; i++) {
-      if (state.commentList[i].id == id) {
+    state.commentList.map((x, i) => {
+      if (x.id == id) {
         state.commentList.splice(i, 1);
-        localStorage['commentList'] = JSON.stringify(state.commentList);
-        break;
+        return;
       }
-    }
+    });
+    saveCommentList(state.commentList);
+  },
+  [types.LIKEORNOT](state, id) {
+    state.commentList.map((x) => {
+      if (x.id == id) {
+        let likeSet = new Set(x.like);
+        likeSet.delete(state.user) ? x.like = [...likeSet] : x.like.push(state.user);
+        return
+      }
+    });
+    saveCommentList(state.commentList);
   }
+}
+
+const saveCommentList = commentList => {
+  localStorage['commentList'] = JSON.stringify(commentList);
 }
 
 export default new Vuex.Store({

@@ -3,8 +3,8 @@
   <textarea class="form-control" rows="3" placeholder="留言" v-model.trim="content" maxlength="100"></textarea>
   <button type="button" class="btn btn-secondary" @click="comment">留言</button>
   <input class="form-control" id="user" placeholder="小硫酸铜" maxlength="10" v-model.trim="user" @change="changeUser" />
-  <div id="comment" class="col-xs-12" v-show="this.$store.state.commentList.length>0" style="display:none;border-bottom:0px;">
-    <li v-for="comment in this.$store.state.commentList">
+  <div id="comment" class="col-xs-12" v-show="this.$store.getters.commentListIsLike.length>0" style="display:none;border-bottom:0px;">
+    <li v-for="comment in this.$store.getters.commentListIsLike">
       <table class="tourist-table">
         <tbody>
           <tr>
@@ -16,8 +16,7 @@
               </div>
               <div class="content">{{comment.content}}</div>
               <div class="operate">
-                <span>赞({{comment.like.length}})</span>
-                <span>踩({{comment.hate.length}})</span>
+                <span class="cursor-pointer" v-bind:class="{'is-like':comment.isLike}" @click="likeOrNot(comment.id)">赞 {{comment.like.length}}</span>
                 <span class="cursor-pointer" v-show="(user==''&&comment.user=='小硫酸铜')||user==comment.user" @click="deleteComment(comment.id)">删除</span>
               </div>
             </td>
@@ -40,25 +39,21 @@ export default {
       content: '留言'
     }
   },
-  created: function() {
-    this.getCommentList();
-  },
   methods: {
+    changeUser() {
+      this.$store.dispatch('changeUser', this.user);
+    },
     comment() {
       if (this.content != '') {
         this.$store.dispatch('comment', this.content);
         this.content = '留言';
       }
     },
+    likeOrNot(id) {
+      this.$store.dispatch('likeOrNot', id);
+    },
     deleteComment(id) {
       this.$store.dispatch('deleteComment', id);
-    },
-    changeUser() {
-      this.$store.dispatch('changeUser', this.user);
-    },
-    getCommentList() {
-      console.log('getCommentList');
-      this.$store.dispatch('getCommentList');
     },
     getDateString(time) {
       var time = Date.parse(new Date()) / 1000 - time;
@@ -125,6 +120,10 @@ button {
 #comment img {
   margin: 0px 10px;
   width: 48px;
+}
+
+#comment .is-like {
+  color: red;
 }
 
 #comment .detail {
