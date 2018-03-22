@@ -15,7 +15,11 @@ export default {
     return {
       content: '留言',
       user: this.$store.state.user,
-      commentList: this.$store.getters.commentListIsLike
+    }
+  },
+  computed: {
+    commentList() {
+      return this.$store.getters.commentListIsLike;
     }
   },
   components: {

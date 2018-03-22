@@ -11,7 +11,8 @@ const routes = [{
     component: commentBox
   },
   {
-    path: '/user',
+    name: 'user',
+    path: '/user:user',
     component: userComment
   },
 ];

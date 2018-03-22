@@ -24,7 +24,7 @@ const state = {
 const getters = {
   commentListIsLike: state => {
     state.commentList.map(x => {
-      x.isLike = new Set(x.like).has(state.user);
+      x.isLike = x.like.includes(state.user);
     });
     return state.commentList;
   }

@@ -3,7 +3,7 @@
   <img :src="getImg(comment.user)">
   <td class="detail pull-left" width="auto">
     <div>
-      <strong><router-link :to="{path:'/user',query:{id:comment.user}}">{{comment.user}}</router-link></strong>
+      <strong><router-link :to="{name:'user',params:{user:comment.user}}">{{comment.user}}</router-link></strong>
       <span class="time">{{getDateString(comment.time)}}</span>
     </div>
     <div class="content">{{comment.content}}</div>
