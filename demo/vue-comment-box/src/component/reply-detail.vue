@@ -1,18 +1,14 @@
 <template>
 <tr>
-  <img :src="getImg(comment.user)">
+  <img :src="getImg(reply.user)">
   <td class="detail pull-left" width="auto">
     <div>
-      <strong><router-link :to="{name:'user',params:{userId:comment.user}}">{{comment.user}}</router-link></strong>
-      <span class="time">{{getDateString(comment.time)}}</span>
+      <strong><router-link :to="{name:'user',params:{userId:reply.user}}">{{reply.user}}</router-link></strong>
+      <span class="time">{{getDateString(reply.time)}}</span>
     </div>
-    <div class="content">{{comment.content}}</div>
+    <div class="content">{{reply.content}}</div>
     <div class="operate">
-      <span class="cursor-pointer" v-bind:class="{'is-like':comment.isLike}" @click="likeOrNot(comment.id)">赞 {{comment.like.length}}</span>
-      <router-link :to="{name:'comment',params:{commentId:comment.id}}">
-        <span class="cursor-pointer">回复 {{comment.reply}}</span>
-      </router-link>
-      <span class="cursor-pointer" v-show="(this.$store.state.user==''&&comment.user=='小硫酸铜')||this.$store.state.user==comment.user" @click="deleteComment(comment.id)">删除</span>
+      <span class="cursor-pointer" v-show="(this.$store.state.user==''&&reply.user=='小硫酸铜')||this.$store.state.user==reply.user" @click="deleteReply(reply.id)">删除</span>
     </div>
   </td>
 </tr>
@@ -22,13 +18,10 @@
 import md5 from 'js-md5'
 
 export default {
-  props: ['comment'],
+  props: ['reply'],
   methods: {
-    likeOrNot(id) {
-      this.$store.dispatch('likeOrNot', id);
-    },
-    deleteComment(id) {
-      this.$store.dispatch('deleteComment', id);
+    deleteReply(id) {
+      this.$store.dispatch('deleteReply', id);
     },
     getDateString(time) {
       var time = Date.parse(new Date()) / 1000 - time;
@@ -80,7 +73,7 @@ img {
   float: right;
 }
 
-#btn-comment {
+#btn-reply {
   margin: 20px 0px;
 }
 
@@ -88,7 +81,7 @@ img {
   margin-top: 20px;
 }
 
-#comment-num {
+#reply-num {
   line-height: 33px;
   margin-left: 10px;
 }

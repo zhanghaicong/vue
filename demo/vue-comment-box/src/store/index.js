@@ -17,7 +17,8 @@ const state = {
     }]
   },
   user: (localStorage['user'] == '' || localStorage['user'] == undefined) ? '小硫酸铜' : localStorage['user'],
-  commentList: (localStorage['commentList'] && JSON.parse(localStorage['commentList']) instanceof Array) ? JSON.parse(localStorage['commentList']) : []
+  commentList: (localStorage['commentList'] && JSON.parse(localStorage['commentList']) instanceof Array) ? JSON.parse(localStorage['commentList']) : [],
+  replyList: (localStorage['replyList'] && JSON.parse(localStorage['replyList']) instanceof Array) ? JSON.parse(localStorage['replyList']) : [],
 }
 
 // getters
@@ -42,15 +43,31 @@ const actions = {
   }, content) {
     commit(types.COMMENT, content);
   },
+  deleteComment({
+    commit
+  }, id) {
+    commit(types.DELETE_COMMENT, id);
+  },
   likeOrNot({
     commit
   }, id) {
     commit(types.LIKEORNOT, id);
   },
-  deleteComment({
+  reply({
+    commit
+  }, {
+    commentId,
+    content
+  }) {
+    commit(types.REPLY, {
+      commentId,
+      content
+    });
+  },
+  deleteReply({
     commit
   }, id) {
-    commit(types.DELETECOMMENT, id);
+    commit(types.DELETE_REPLY, id);
   }
 }
 
@@ -68,34 +85,74 @@ const mutations = {
       content: content,
       time: parseInt(new Date().getTime() / 1000),
       like: [],
+      reply: 0,
     };
     console.log(comment);
     state.commentList.push(comment);
-    saveCommentList(state.commentList);
+    saveToCache('commentList', state.commentList);
   },
-  [types.DELETECOMMENT](state, id) {
+  [types.DELETE_COMMENT](state, id) {
     state.commentList.map((x, i) => {
       if (x.id == id) {
         state.commentList.splice(i, 1);
         return;
       }
     });
-    saveCommentList(state.commentList);
+    saveToCache('commentList', state.commentList);
   },
   [types.LIKEORNOT](state, id) {
     state.commentList.map((x) => {
       if (x.id == id) {
         let likeSet = new Set(x.like);
         likeSet.delete(state.user) ? x.like = [...likeSet] : x.like.push(state.user);
-        return
+        return;
       }
     });
-    saveCommentList(state.commentList);
-  }
+    saveToCache('commentList', state.commentList);
+  },
+  [types.REPLY](state, {
+    commentId,
+    content
+  }) {
+    const id = state.replyList.length > 0 ? parseInt(state.replyList[state.replyList.length - 1].id) + 1 : 1;
+    const reply = {
+      id: id,
+      user: state.user,
+      commentId: commentId,
+      content: content,
+      time: parseInt(new Date().getTime() / 1000),
+    };
+    console.log(reply);
+    state.replyList.push(reply);
+    state.commentList.map(x => {
+      x.id == commentId ? x.reply++ : '';
+      return;
+    });
+    saveToCache('commentList', state.commentList);
+    saveToCache('replyList', state.replyList);
+  },
+  [types.DELETE_REPLY](state, id) {
+    let commentId = '';
+    state.replyList.map((x, i) => {
+      if (x.id == id) {
+        state.replyList.splice(i, 1);
+        commentId = x.commentId;
+        return;
+      }
+    });
+    state.commentList.map(x => {
+      if (x.id == commentId) {
+        x.reply--;
+        return;
+      }
+    });
+    saveToCache('commentList', state.commentList);
+    saveToCache('replyList', state.replyList);
+  },
 }
 
-const saveCommentList = commentList => {
-  localStorage['commentList'] = JSON.stringify(commentList);
+const saveToCache = (key, value) => {
+  localStorage[key] = JSON.stringify(value);
 }
 
 export default new Vuex.Store({

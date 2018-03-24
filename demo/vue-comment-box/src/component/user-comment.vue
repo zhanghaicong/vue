@@ -1,8 +1,8 @@
 <template>
 <div>
-  <router-link to="/">所有留言</router-link>
-  <p>{{$route.params.user}}的留言（{{commentListByUser.length}}）</p>
-  <commentList :commentList="commentListByUser"></commentList>
+  <router-link to="/">所有评论</router-link>
+  <p>{{$route.params.userId}}的评论（{{commentList.length}}）</p>
+  <commentList :commentList="commentList"></commentList>
 </div>
 </template>
 
@@ -14,10 +14,10 @@ export default {
     commentList,
   },
   computed: {
-    commentListByUser() {
+    commentList() {
       let commentList = [];
       this.$store.getters.commentListIsLike.map(x => {
-        x.user == this.$route.params.user ? commentList.push(x):'';
+        x.user == this.$route.params.userId ? commentList.push(x):'';
       });
       return commentList;
     }

@@ -1,5 +1,6 @@
 export const CHANGE_USER = 'CHANGE_USER'
 export const COMMENT = 'COMMENT'
-export const DELETECOMMENT = 'DELETECOMMENT'
-export const GET_COMMENT_LIST = 'GET_COMMENT_LIST'
+export const DELETE_COMMENT = 'DELETE_COMMENT'
 export const LIKEORNOT = 'LIKEORNOT'
+export const REPLY = 'REPLY'
+export const DELETE_REPLY = 'DELETE_REPLY'

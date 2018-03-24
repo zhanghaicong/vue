@@ -1,9 +1,9 @@
 <template>
-<div id="comment" class="col-xs-12" v-show="commentList.length>0" style="display:none;border-bottom:0px;">
-  <li v-for="comment in commentList">
+<div id="reply" class="col-xs-12" v-show="replyList.length>0" style="display:none;border-bottom:0px;">
+  <li v-for="reply in replyList">
     <table class="tourist-table">
       <tbody>
-        <commentDetail :comment="comment"></commentDetail>
+        <replyDetail :reply="reply"></replyDetail>
       </tbody>
     </table>
     <div class="line"></div>
@@ -12,12 +12,12 @@
 </template>
 
 <script>
-import commentDetail from './comment-detail.vue'
+import replyDetail from './reply-detail.vue'
 
 export default {
-  props: ['commentList'],
+  props: ['replyList'],
   components: {
-    commentDetail,
+    replyDetail,
   },
 }
 </script>
@@ -31,7 +31,7 @@ table {
   margin: 10px 0px;
 }
 
-#comment {
+#reply {
   border: 1px solid #e2e2e2;
   background-color: white;
   font-size: 90%;
