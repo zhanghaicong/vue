@@ -19,6 +19,9 @@ export default {
       this.$store.getters.commentListIsLike.map(x => {
         x.user == this.$route.params.userId ? commentList.push(x):'';
       });
+      if (commentList.length == 0) {
+        location.href = '/';
+      }
       return commentList;
     }
   }

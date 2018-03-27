@@ -5,7 +5,7 @@
   <button type="button" class="btn btn-secondary" @click="reply">回复</button>
   <input class="form-control" id="user" placeholder="小硫酸铜" maxlength="10" v-model.trim="user" @change="changeUser" />
   <commentList :commentList="commentList"></commentList>
-  <p>该评论的回复（{{replyList.length}}）</p>
+  <p style="margin-top:20px;">该评论的回复（{{replyList.length}}）</p>
   <replyList :replyList="replyList"></replyList>
 </div>
 </template>
@@ -27,6 +27,9 @@ export default {
       this.$store.getters.commentListIsLike.map(x => {
         x.id == this.$route.params.commentId ? commentList.push(x) : '';
       });
+      if (commentList.length == 0) {
+        location.href = '/';
+      }
       return commentList;
     },
     replyList() {
